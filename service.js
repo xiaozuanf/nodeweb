@@ -1,6 +1,18 @@
 var mysql  = require('mysql');  
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser'); 
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+//设置跨域访问
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By",' 3.2.1');
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+ });
 var connection = mysql.createConnection({     
   host     : '81.68.195.90',       
   user     : 'root',              
@@ -10,33 +22,32 @@ var connection = mysql.createConnection({
 }); 
  
 connection.connect();
- 
+ //用户列表
 app.get('/userlist', function (req, res) {
     var  sql = 'SELECT * FROM user';
     connection.query(sql,function (err, result) {
             if(err){
-                return result;
+              console.log('[SELECT ERROR] - ',err.message);
+              return;
             }
-    
-            console.log('--------------------------SELECT----------------------------');
-            console.log(result);
-            console.log('------------------------------------------------------------\n\n');  
+            res.json({
+              code:200,
+              data:result
+            })
     });
  })
 //增
-  // var  addSql = 'INSERT INTO runoob_tbl(runoob_title,runoob_author,submission_date) VALUES(?,?,?)';
-  // var  addSqlParams = ['UI设计', '总旋风','2019-05-01'];
-  // connection.query(addSql,addSqlParams,function (err, result) {
-  //         if(err){
-  //          console.log('[INSERT ERROR] - ',err.message);
-  //          return;
-  //         }        
-   
-  //        console.log('--------------------------INSERT----------------------------');
-  //        //console.log('INSERT ID:',result.insertId);        
-  //        console.log('INSERT ID:',result);        
-  //        console.log('-----------------------------------------------------------------\n\n');  
-  // });
+app.post('/useradd',function(req,res){
+  var  addSql = 'INSERT INTO user(name,phone) VALUES(?,?)';
+  var  addSqlParams = [req.body.name, req.body.phone];
+  connection.query(addSql,addSqlParams,function (err, result) {
+      if(err){
+       console.log('[INSERT ERROR] - ',err.message);
+       return;
+      }   
+      res.json(result)
+  });
+})
 
 
 //改
@@ -72,3 +83,4 @@ var server = app.listen(8082, function () {
   
     console.log("应用实例，访问地址为 http://%s:%s", host, port)
   })
+  
