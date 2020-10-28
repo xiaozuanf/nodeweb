@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+    <style type="text/css">
+        .dissculi{border:1px solid red;float: left;margin:10px;}
+        .disscu{overflow: hidden;}
+    </style>
+</head>
+<body>
+    <div class="disscu">
+        <!-- <div class="dissculi">
+            <p><span>姓名：</span><span>小钻风</span></p>
+            <p><span>年龄：</span><span>23</span></p>
+            <p><span>评论：</span><span>很棒！</span></p>
+            <p><span>时间：</span><span>2018-05-05</span></p>
+            <button>删除</button>
+            <button>修改</button>
+            <button>查看</button>
+        </div> -->
+    </div>
+    <div style="border:1px solid blue;display: inline-block;">
+        <p><span>姓名：</span><input type="" name="name"></p>
+        <p><span>手机号：</span><input type="" name="phone"></p>
+        <button id="adcontent">添加用户</button>
+    </div>
+    <script type="text/javascript">
+        function list(){
+            $.ajax({
+                type:'get',
+                url:'http://81.68.195.90:8082/userlist',
+                data:{name:'wdl',pass:'123'},
+                success:function(data){
+                    console.log(data);
+                    if(data.code==200){
+                        $(".disscu").html("")
+                        for (var i = 0; i < data.data.length; i++) {
+                            var node='<div class="dissculi"><p><span>姓名：</span><span>'+data.data[i].name+'</span></p><p><span>手机号：</span><span>'+data.data[i].phone+'</span></p><button>删除</button><button>修改</button><button>查看</button></div>'
+                            $(".disscu").append(node)
+                        }
+                    }
+                },
+                error:function(err){
+                    console.log(err)
+                }
+            })
+        }
+        list()
+        //新增
+        $("#adcontent").click(function(){
+            $.ajax({
+                type:'post',
+                url:'http://81.68.195.90:8082/useradd',
+                data:{
+                    name:$("input[name=name]").val(),
+                    phone:$("input[name=phone]").val(),
+                },
+                success:function(data){
+                    console.log(data);
+                },
+                error:function(err){
+                    console.log(err)
+                }
+            })
+            list()
+        })
+    </script>
+</body>
+</html>

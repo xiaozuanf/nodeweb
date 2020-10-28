@@ -4,6 +4,8 @@ var app = express();
 var bodyParser = require('body-parser'); 
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+app.use('/static', express.static('html'));//静态托管html
 //设置跨域访问
 app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin","*");
