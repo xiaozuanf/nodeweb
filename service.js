@@ -50,8 +50,20 @@ app.post('/useradd',function(req,res){
       res.json(result)
   });
 })
-
-
+//文章列表
+app.get('/ariclelist', function (req, res) {
+  var  sql = 'SELECT * FROM aricle';
+  connection.query(sql,function (err, result) {
+          if(err){
+            console.log('[SELECT ERROR] - ',err.message);
+            return;
+          }
+          res.json({
+            code:200,
+            data:result
+          })
+  });
+})
 //改
   // var modSql = 'UPDATE runoob_tbl SET runoob_title = ?,runoob_author = ? WHERE runoob_id = ?';
   // var modSqlParams = ['菜鸟移动站', 'xiaoxiao',5];
