@@ -52,7 +52,7 @@ app.post('/useradd',function(req,res){
 })
 //文章列表
 app.get('/ariclelist', function (req, res) {
-  var  sql = 'SELECT * FROM aricle';
+  var  sql = 'SELECT * FROM article';
   connection.query(sql,function (err, result) {
           if(err){
             console.log('[SELECT ERROR] - ',err.message);
