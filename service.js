@@ -56,6 +56,10 @@ app.get('/ariclelist', function (req, res) {
   connection.query(sql,function (err, result) {
           if(err){
             console.log('[SELECT ERROR] - ',err.message);
+            res.json({
+              code:299,
+              data:err.message
+            })
             return;
           }
           res.json({
@@ -65,17 +69,23 @@ app.get('/ariclelist', function (req, res) {
   });
 })
 //文章列表详情
-app.get('/ariclelinfo', function (req, res) {
-  var  sql = 'SELECT * FROM article where id='+req.body.id;
+app.get('/aricleinfo', function (req, res) {
+  console.log(req.body)
+  console.log(req.query)
+  var  sql = 'SELECT * FROM article where id='+req.query.id;
   connection.query(sql,function (err, result) {
-          if(err){
-            console.log('[SELECT ERROR] - ',err.message);
-            return;
-          }
-          res.json({
-            code:200,
-            data:result
-          })
+    if(err){
+      console.log('[SELECT ERROR] - ',err.message);
+      res.json({
+        code:299,
+        data:err.message
+      })
+      return;
+    }
+    res.json({
+      code:200,
+      data:result[0]
+    })
   });
 })
 //改
