@@ -1,11 +1,11 @@
-var mysql  = require('mysql');  
+const connection = require("./mysql/mysql.js")//  mysql连接
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser'); 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.json()); // 解析application/json
+app.use(bodyParser.urlencoded({ extended: true })); // 解析application/x-www-form-urlencoded
 
-app.use('/static', express.static('html'));//静态托管html
+app.use('/static', express.static('html'));//静态托管html 通过路径 /static/ 访问HTML内的文件
 //设置跨域访问
 app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin","*");
@@ -13,18 +13,9 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Headers","content-type");
   //跨域允许的请求方式 
   res.header("Access-Control-Allow-Methods","DELETE,PUT,POST,GET,OPTIONS");
-    next();
- });
-var connection = mysql.createConnection({     
-  host     : '81.68.195.90',       
-  user     : 'root',              
-  password : 'hgl131410040209',       
-  port: '3306',                   
-  database: 'nodeweb' ,
-  multipleStatements: true//用于分页返回总条数
-}); 
- 
-connection.connect();
+  next();
+});
+
  //用户列表
 app.get('/userlist', function (req, res) {
     var  sql = 'SELECT * FROM user';
@@ -51,81 +42,10 @@ app.post('/useradd',function(req,res){
       res.json(result)
   });
 })
-//文章列表
-app.get('/ariclelist', function (req, res) {
-  var  sql = 'SELECT * FROM article';
-  connection.query(sql,function (err, result) {
-          if(err){
-            console.log('[SELECT ERROR] - ',err.message);
-            res.json({
-              code:299,
-              data:err.message
-            })
-            return;
-          }
-          res.json({
-            code:200,
-            data:result
-          })
-  });
-})
-//文章列表分页
-app.get('/ariclepage', function (req, res) {
-  var  sql = 'SELECT COUNT(*) FROM article ; SELECT * FROM article ORDER BY date DESC LIMIT '+(req.query.page-1)*req.query.size+', '+req.query.size;
-  connection.query(sql,function (err, result) {
-    if(err){
-      console.log('[SELECT ERROR] - ',err.message);
-      res.json({
-        code:299,
-        data:err.message
-      })
-      return;
-    }
-    res.json({
-      code:200,
-      data:{
-        total:result[0][0]['COUNT(*)'],
-        list:result[1]
-      }
-    })
-  });
-})
-//文章列表详情
-app.get('/aricleinfo', function (req, res) {
-  var  sql = 'SELECT * FROM article where id='+req.query.id;
-  connection.query(sql,function (err, result) {
-    if(err){
-      console.log('[SELECT ERROR] - ',err.message);
-      res.json({
-        code:299,
-        data:err.message
-      })
-      return;
-    }
-    res.json({
-      code:200,
-      data:result[0]
-    })
-  });
-})
-//文章分类列表
-app.get('/aricletype', function (req, res) {
-  var  sql = 'SELECT * FROM articletype';
-  connection.query(sql,function (err, result) {
-          if(err){
-            console.log('[SELECT ERROR] - ',err.message);
-            res.json({
-              code:299,
-              data:err.message
-            })
-            return;
-          }
-          res.json({
-            code:200,
-            data:result
-          })
-  });
-})
+
+//路由 社交网站所需的接口
+var useRouter=require("./article")
+app.use(useRouter)
 //改
   // var modSql = 'UPDATE runoob_tbl SET runoob_title = ?,runoob_author = ? WHERE runoob_id = ?';
   // var modSqlParams = ['菜鸟移动站', 'xiaoxiao',5];
