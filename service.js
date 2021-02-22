@@ -16,6 +16,7 @@ app.all('*', function(req, res, next) {
   next();
 });
 
+
  //用户列表
 app.get('/userlist', function (req, res) {
     var  sql = 'SELECT * FROM user';
